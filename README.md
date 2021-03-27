@@ -39,7 +39,7 @@ In `djangoblog/settings.py`:
 2.  Make all migrations before to run
 
 ```shell
-
+        $cd djangoblog
         $python manage.py makemigrations
         $python manage.py migrate
 ```

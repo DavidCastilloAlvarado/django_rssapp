@@ -4,6 +4,11 @@ from .models import User_feed, log_errors
 from .utiles import get_rss_link
 
 
+class Get_payload_serializer(serializers.Serializer):
+    id_feed = serializers.IntegerField()
+    first = serializers.IntegerField()
+
+
 class Id_feed_serializer(serializers.Serializer):
     id = serializers.IntegerField()
 

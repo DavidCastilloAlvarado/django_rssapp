@@ -7,7 +7,7 @@ from .models import User_feed, log_errors
 from django.contrib.auth.models import User
 from rest_framework import status
 import time
-
+# I select New york times because have more that 60 items
 # web page to contain a rss into his source code
 URL_TO_DETECT_RSS_VAL = "https://www.nytimes.com/"
 # Rss validated, it works
@@ -67,8 +67,24 @@ class MultiTestFeedsCases(TestCase):
         obj = OBJ()
         result = obj.get_items_from_feed(url=RSS_VAL,
                                          id=999,
+                                         first=1,
                                          serializer=log_serializer)
-        self.assertEqual(len(result), 8)
+        self.assertEqual(len(result), 5)
+
+    def test_get_items_from_feed_more_update(self,):
+        """
+        Test the function which get the items or entries from the feeds,
+        the function take the url (rss) from de database and then request
+        the data to the source, parse xml and transform the first 8 entries into json format
+        """
+        class OBJ:
+            get_items_from_feed = get_items_from_feed
+        obj = OBJ()
+        result = obj.get_items_from_feed(url=RSS_VAL,
+                                         id=999,
+                                         first=0,
+                                         serializer=log_serializer)
+        self.assertEqual(len(result), 7)
 
     def test_get_items_from_feed_raising_error_then_save_log(self,):
         """
@@ -81,6 +97,7 @@ class MultiTestFeedsCases(TestCase):
         obj = OBJ()
         result = obj.get_items_from_feed(url=RSS_VAL[:-3],
                                          id=999,
+                                         first=1,
                                          serializer=log_serializer)
         self.assertEqual(len(result), 0)
         self.assertTrue(log_errors.objects.filter(id_feed=999).exists())
@@ -170,7 +187,7 @@ class MultiTestFeedsCases(TestCase):
                                       content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_get_items_from_our_feeds(self):
+    def test_get_items_from_our_feeds_first_update(self):
         """
         Test the api for get items or entries from feeds. 
         Test the entire pipeline
@@ -180,11 +197,18 @@ class MultiTestFeedsCases(TestCase):
         - validate urls
         - register error if occurs
         - Response and validata status_code 200
+        - first = 1 to the first request 8 first entries
+        - fiest = 0 to the next 8 entries, if they exist
         """
         response = self.user_signup_login()
         response = self.client.post('/rss/api/',
                                     self.data,
                                     content_type='application/json')
-        response = self.client.get('/rss/api/',
-                                   content_type='application/json')
+        response = self.client.post('/rss/api/update/',
+                                    {"id_feed": 1, "first": 1},
+                                    content_type='application/json')
+        response2 = self.client.post('/rss/api/update/',
+                                     {"id_feed": 1, "first": 0},
+                                     content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response2.status_code, status.HTTP_200_OK)

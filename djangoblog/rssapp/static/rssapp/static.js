@@ -109,7 +109,7 @@ function addentries(feeds) {
                 a.innerHTML += item.title;
                 a.className += "link-secondary";
                 a.href = item.url;
-                a.id = item.title;
+                a.id = item.title + item.date;
                 a.title = item.description;
                 a.target = "_blank";
                 li.appendChild(a);
@@ -120,12 +120,13 @@ function addentries(feeds) {
     })
 }
 
-async function get_feeds() {
+async function get_entries_from_server(payload) {
     if (document.getElementById("create-card") == null) {
         let spinner = document.getElementById("spinner-home");
         $.ajax({
-            type: "GET",
-            url: "/rss/api",
+            type: "POST",
+            url: "/rss/api/update/",
+            data: payload,
             headers: { 'X-CSRFToken': csrftoken },
             dataType: "json",
             encode: true,
@@ -141,15 +142,40 @@ async function get_feeds() {
             console.log(data);
         }).fail(function (data) {
             spinner.style.display = "none";
-            console.log("FAIL...")
+            console.log("FAIL...");
+            console.log(data);
         });
     }
+
+}
+
+async function get_feeds() {
+    /* "all" = 1 for get all items from 0. 
+    Set to 0 to refresh every element by demand */
+
+    var payload = {
+        id_feed: 1,
+        first: 1,
+    }
+    get_entries_from_server(payload);
+
 }
 
 function refresh_feeds() {
     let spinner = document.getElementById("spinner-home");
     spinner.style.display = "block";
     get_feeds();
+}
+
+async function refresh_by_feed(element) {
+    /* "all" = 1 for get all items from 0. 
+    Set to 0 to refresh every element by demand */
+    id = element.name
+    var payload = {
+        id_feed: id,
+        first: 0,
+    }
+    get_entries_from_server(payload);
 }
 
 window.onload = get_feeds;

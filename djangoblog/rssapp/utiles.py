@@ -1,6 +1,7 @@
 from requests.packages.urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
 from bs4 import BeautifulSoup
+from .models import User_feed
 import urllib3
 import requests
 http_poolmanag = urllib3.PoolManager()
@@ -34,7 +35,7 @@ def get_rss_link(url):
 
 
 @ staticmethod
-def get_items_from_feed(url, id, serializer, ** kwargs):
+def get_items_from_feed(url, id, first, serializer, ** kwargs):
     """
     Get the items from the RSS provider, for every url we get the entries, 
     only the last 8. If the request fail, the event will be saved into the table
@@ -45,17 +46,18 @@ def get_items_from_feed(url, id, serializer, ** kwargs):
         response = http.get(url)
         response.raise_for_status()
         soup = BeautifulSoup(response.content, features="xml")
-        items = soup.findAll('item', limit=10)
+        limit = 5 if first == 1 else 12
+        items = soup.findAll('item', limit=limit)
         flag_entry = False
         if len(items) == 0:
-            items = soup.findAll('entry', limit=10)
+            items = soup.findAll('entry', limit=limit)
             flag_entry = True
 
         if items is None:
             return []
         else:
             retrieve = []
-            for item in items[:8]:
+            for item in get_feed(items, first):
                 entry = dict(
                     title=item.title.text,
                     url=get_href(item.link) if flag_entry else item.link.text,
@@ -87,3 +89,20 @@ def get_href(link2):
         return link[:end]
     except:
         return link2.text
+
+
+def get_feed(list, first):
+    if first == 1:
+        return list[:5]
+    elif first == 0:
+        return list[5:12]
+
+
+def get_data_from_model(first, author, id_feed):
+    if first == 1:
+        return User_feed.objects.filter(author=author
+                                        ).values_list("id", "url")
+    elif first == 0:
+        return User_feed.objects.filter(author=author,
+                                        id=id_feed,
+                                        ).values_list("id", "url")

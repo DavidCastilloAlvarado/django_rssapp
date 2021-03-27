@@ -4,11 +4,11 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializer import Add_feed_user, Id_feed_serializer, log_serializer
+from .serializer import Add_feed_user, Id_feed_serializer, log_serializer, Get_payload_serializer
 from rest_framework import status
 from django.contrib.auth.models import User
 from .models import User_feed
-from .utiles import get_items_from_feed
+from .utiles import get_items_from_feed, get_data_from_model
 
 
 @login_required()
@@ -28,22 +28,16 @@ def rss_add(request):
     return render(request, 'rssapp/add_feed.html', {"feeds": query_feeds, })
 
 
-class API_rss(APIView):
+class ApiRssFeedRetrieve(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
-    serializer_income = Add_feed_user
-    serializer_income_delete = Id_feed_serializer
     Get_items_from_feed = get_items_from_feed
+    Get_payload_serializer = Get_payload_serializer
     Log_serializer = log_serializer
     user = User
 
-    def get(self, request, form=None):
-        """
-        Deliver the entire feeds and entries owned by the client.
-        """
-        query_feeds = User_feed.objects.filter(author=request.user.username
-                                               ).values_list("id", "url")
-        data = list(query_feeds)
+    def Get_all_entries_from_feeds(self, query, first):
+        data = list(query)
         if len(data) > 0:
             retrieve = []
             for feed in data:
@@ -51,14 +45,45 @@ class API_rss(APIView):
                 feed_["id"] = feed[0]
                 feed_["items"] = self.Get_items_from_feed(url=feed[1],
                                                           id=feed[0],
+                                                          first=first,
                                                           serializer=self.Log_serializer)
                 retrieve.append(feed_)
-            return Response(retrieve, status=status.HTTP_200_OK)
+            return retrieve, True
         else:
-            return Response(
-                "No feeds found",
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            return [], False
+
+    def post(self, request, form=None):
+        """
+        Deliver the entire feeds and entries owned by the client.
+        """
+        serializer = self.Get_payload_serializer(data=request.data)
+        if serializer.is_valid():
+
+            id_feed = serializer.validated_data.get('id_feed')
+            first = serializer.validated_data.get('first')
+
+            query_feeds = get_data_from_model(first=first,
+                                              author=request.user.username,
+                                              id_feed=id_feed)
+
+            retrieve, state = self.Get_all_entries_from_feeds(query_feeds,
+                                                              first)
+            if state:
+                return Response(retrieve, status=status.HTTP_200_OK)
+            else:
+                return Response(retrieve, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+class ApiRssFeedAdmin(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_income = Add_feed_user
+    serializer_income_delete = Id_feed_serializer
+    user = User
 
     def delete(self, request, format=None):
         """

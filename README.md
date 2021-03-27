@@ -85,6 +85,17 @@ python manage.py test
 python manage.py runserver
 ```
 
+## **Features**
+
+1. User login and signup.
+2. Authentification to see and delete your own feeds.
+3. Initialy the webpage show the first 5 entries by feed.
+4. Rss source autodetection when add a new feed, if the server cant find any then the server response with error and inform to users.
+5. More entries avaliable using the bottom "More" with async method.
+6. Error detection: if the RSS source fail, the error will be store into the table "log_errors".
+7. The feeds have asynchronous update.
+8. API implementations for manage rss feeds and user login/signup.
+
 ## **Templates**
 
 ### 1. Home page

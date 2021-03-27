@@ -77,6 +77,7 @@ cd django_rssapp
 python -m pip install --user virtualenv
 python -m venv .
 source ./Scripts/activate
+pip install -r requirements.txt
 cd djangoblog
 python manage.py makemigrations
 python manage.py migrate

@@ -33,7 +33,7 @@ In `djangoblog/settings.py`:
 
    'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'opencovidlocal',
+        'NAME': 'MYDATABASE',
         'USER': 'postgres',
         'PASSWORD': 'admin1234',
         'HOST': '127.0.0.1',

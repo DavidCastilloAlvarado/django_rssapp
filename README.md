@@ -1,4 +1,4 @@
-# ETL by Django Command
+# Rss APP by Django
 
 ## **Installation:**
 

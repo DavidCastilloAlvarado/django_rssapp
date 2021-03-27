@@ -1,0 +1,66 @@
+{% extends "./base.html" %}
+
+{%block title%} RSS app {%endblock%}
+
+{% block micontenido %}
+
+<div class="card text-center">
+
+    <div class="card-body">
+        <h2 class="card-title">Hello {{ username }} </h2>
+        <p class="card-text">Checkout your feeds</p>
+        <div class="p-2">
+            <a href="/rss/adding" class="btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                    <path
+                        d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+                </svg>
+                Add a feed</a>
+        </div>
+
+
+    </div>
+    <button type="button" class="btn btn-secondary p-1 " onclick="refresh_feeds()">Refresh</button>
+
+</div>
+<center>
+    <div class="spinner-border text-primary my-4" role="status" id="spinner-home" style="display: none;">
+        <span class="visually-hidden"></span>
+    </div>
+</center>
+
+<div class="card-body justify-content-center mx-auto">
+    <h2>Your Feeds</h2>
+    {% for feed in feeds %}
+
+    <div class=" card bg-light mb-3" style="max-width: 30rem;" id="{{ feed.id }}-card">
+        <div class="card-header">
+            <h6>
+                {{ feed.title }}
+            </h6>
+        </div>
+        <div class="card-body">
+            <ul class="list-group" id="{{ feed.id }}-list">
+                <center>
+                    <div class="spinner-border text-primary" role="status" id="{{ feed.id }}-spinner">
+                        <span class="visually-hidden"></span>
+                    </div>
+                </center>
+
+            </ul>
+            <button type="button" id="{{ feed.id }}" class="btn btn-secondary" onclick="deleteFeed(this)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-trash-fill" viewBox="0 0 16 16">
+                    <path
+                        d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
+                </svg> Delete
+            </button>
+
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+
+{%endblock%}

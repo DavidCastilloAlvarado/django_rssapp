@@ -1,0 +1,22 @@
+{% extends "./layout/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="card text-center bg.">
+
+    <div class="card-body">
+        <h2 class="card-title ">Welcome</h2>
+        <p class="card-text">RSS demo app</p>
+        <div class="p-2">
+            <a href="/accounts/login/" class="btn btn-primary">LogIn</a>
+        </div>
+        <div>
+            <a href="/accounts/signup/" class="btn btn-success">SignUp</a>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock content %}

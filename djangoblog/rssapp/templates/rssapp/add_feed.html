@@ -1,0 +1,76 @@
+{% extends "./base.html" %}
+
+{%block title%} RSS app {%endblock%}
+
+{% block micontenido %}
+<center>
+
+    <div class="card text-center px-4 m-4" style="max-width: 30rem;" id="create-card">
+
+        <div class="card-body">
+            <h2 class="card-title">Create a new feed</h2>
+            <form action="/rss/api/" method="post" id="add_feed_form">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="title">Title</label>
+                    <input type="text" name="title" class="form-control" id="title" placeholder="Enter title" autofocus
+                        required>
+                    <small id="Titlehelp" class="form-text text-muted">Title of your feed</small>
+                </div>
+                <div class="form-group">
+                    <label for="body">Body</label>
+                    <input type="text" name="body" class="form-control" id="body" placeholder="Describe me">
+                    <small id="bodyhelp" class="form-text text-muted">Describe your feed</small>
+                </div>
+                <div class="form-group">
+                    <label for="url">URL</label>
+                    <input type="url" name="url" class="form-control" id="url" required placeholder="https://">
+                    <small id="urlhelp" class="form-text text-muted">Introduce some RSS source or URL for autodetection
+                    </small>
+                </div>
+
+                <!-- <input type="submit" value="Submit" class="btn-primary"> -->
+                <button type="submit" value="Submit" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                        <path
+                            d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z" />
+                    </svg> Create</button>
+            </form>
+
+
+        </div>
+        <center>
+            <div class="spinner-border text-primary my-2" role="status" id="spinner-add" style="display: none;">
+                <span class="visually-hidden"></span>
+            </div>
+        </center>
+
+    </div>
+
+    <!-- <div class="card-body">
+        <h2>Your Feeds</h2>
+        {% for feed in feeds %}
+
+        <div class=" card bg-light mb-3" style="max-width: 30rem;" id="{{ feed.id }}">
+            <div class="card-header">{{ feed.title }}</div>
+            <div class="card-body">
+                <p class="card-text">{{ feed.body }}</p>
+                <button type="button" id="{{ feed.id }}" class="btn btn-secondary"
+                    onclick="deleteFeed(this)">Borrar</button>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div> -->
+
+
+
+</center>
+
+
+
+
+
+{%endblock%}

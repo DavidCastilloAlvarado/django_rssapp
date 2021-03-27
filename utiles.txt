@@ -1,0 +1,18 @@
+# Inicializar el proyecto
+python -m venv .
+pip install spacy selenium pytest flask
+python -m spacy download en_core_web_sm
+
+# Freeze packages
+pip freeze -l > requirements.txt 
+
+# For run the test
+please go to the test folder and run
+$ python -m pytest
+
+# Run Django Test 
+python manage.py test
+
+# make a migration every time you create a new model 
+python manage.py makemigrations
+python manage.py migrate
